@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Installs HAProxy and round-robins traffic between web-01 and web-02
+
+apt-get update -y
+apt-get install -y haproxy
+
+cat >> /etc/haproxy/haproxy.cfg << 'CFG'
+
+frontend http_front
+    bind *:80
+    mode http
+    default_backend web_servers
+
+backend web_servers
+    mode http
+    balance roundrobin
+    server 7330-web-01 52.56.214.58:80 check
+    server 7330-web-02 35.176.93.193:80 check
+CFG
+
+service haproxy restart
