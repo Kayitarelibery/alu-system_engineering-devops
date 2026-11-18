@@ -1,6 +1,5 @@
-
 #!/usr/bin/env bash
-# Configures Nginx to redirect /redirect_me to a YouTube URL
+# Configures Nginx to redirect /redirect_me to a YouTube video
 
 apt-get update -y
 apt-get install -y nginx
@@ -27,4 +26,6 @@ EOF
 
 if nginx -t; then
     service nginx restart
+else
+    exit 1
 fi
