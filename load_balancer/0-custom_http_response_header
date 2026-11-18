@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
-# Configures Nginx so the response includes X-Served-By with the server hostname
+# Configures Nginx to return the hostname in the X-Served-By HTTP response header
+
 apt-get update -y
 apt-get install -y nginx
-echo "Holberton School" > /var/www/html/index.html
-echo "Holberton School" > /var/www/html/index.nginx-debian.html
-if ! grep -q "X-Served-By" /etc/nginx/sites-available/default
-then
-	sed -i "s/server_name _;/server_name _;\n\tadd_header X-Served-By \$hostname;/" /etc/nginx/sites-available/default
+
+cat > /etc/nginx/conf.d/0-custom-http-response-header.conf <<'EOF'
+add_header X-Served-By $hostname always;
+EOF
+
+if nginx -t; then
+    service nginx restart
+else
+    exit 1
 fi
-service nginx restart
