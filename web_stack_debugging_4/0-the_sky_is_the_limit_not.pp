@@ -1,3 +1,5 @@
+# Raises the open file limit of Nginx so it stops failing requests under load
+
 exec { 'increase-nginx-ulimit':
   command => "/bin/sed -i 's/^ULIMIT=.*/ULIMIT=\"-n 4096\"/' /etc/default/nginx",
   onlyif  => "/bin/grep -q '^ULIMIT=' /etc/default/nginx",
