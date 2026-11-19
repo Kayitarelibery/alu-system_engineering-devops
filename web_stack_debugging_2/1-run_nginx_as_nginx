@@ -1,16 +1,10 @@
 #!/usr/bin/env bash
-# Configure Nginx to run as nginx and listen on port 8080
-
-service nginx stop || true
-
-id nginx >/dev/null 2>&1 || useradd --system --no-create-home --shell /usr/sbin/nologin nginx
-
-sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf
-sed -i 's|pid /run/nginx.pid;|pid /var/lib/nginx/nginx.pid;|' /etc/nginx/nginx.conf
-sed -i 's/listen 80 default_server;/listen 8080 default_server;/' /etc/nginx/sites-enabled/default
-sed -i 's/listen \[::\]:80 default_server;/listen [::]:8080 default_server;/' /etc/nginx/sites-enabled/default
-
-mkdir -p /var/lib/nginx /var/log/nginx /var/cache/nginx
-chown -R nginx:nginx /var/lib/nginx /var/log/nginx /var/cache/nginx
-
-nginx -t && runuser -u nginx -- nginx
+# Runs Nginx as the nginx user, listening on port 8080
+service nginx stop
+pkill apache2
+chmod 644 /etc/nginx/nginx.conf
+sed -Ei 's/^\s*#?\s*user .*/user nginx;/' /etc/nginx/nginx.conf
+sed -Ei 's/(listen (\[::\]:)?)80([ ;])/\18080\3/' /etc/nginx/sites-enabled/default
+touch /run/nginx.pid
+chown -R nginx /run/nginx.pid /var/log/nginx /var/lib/nginx
+sudo -u nginx service nginx start
